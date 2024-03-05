@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-
-import './App.css';
 import TodoHeader from './components/TodoHeader';
 
-
+// 여러가지 타입을 갖는 프로퍼티로 이루어진 새로운 것을 정의
+// 마치  todo리스트 하나의 아이템에도  여러가지 타입을 가집 
 interface Todo {
   id: string;
   title: string;
@@ -17,37 +16,36 @@ const App:React.FC =  () => {
 
   const [title,setTitle] = useState<string>('');
   const [text,setText] = useState<string>('');
-  const [isDone,setIsDone] = useState<boolean>(false);
   const [todoData , setTodoData] = useState<Todo[]>([]);
   
 
   const onChangeTitle = (event:React.ChangeEvent<HTMLInputElement>) => setTitle(event.target.value);
   const onChangeText = (event:React.ChangeEvent<HTMLTextAreaElement>) => setText(event.target.value);
 
-  const onSubmitHandler = (event:any) => {
+  const onSubmitHandler = (event:React.FormEvent<HTMLFormElement>) => {
       event.preventDefault();
 
-     setTodoData([ {id:crypto.randomUUID(), title,text, isDone, } ,...todoData ])
+     setTodoData([ {id:crypto.randomUUID(), title,text, isDone:false, } ,...todoData ])
 
     setText('')
     setTitle('')
   }
 
 
-const deleteTodoButtonClick = (id:any) => setTodoData(   todoData.filter((todo:any)=> todo.id !== id) );
+const deleteTodoButtonClick = (id:string) => setTodoData(   todoData.filter((todo)=> todo.id !== id) );
 
 
   
-const  changeTodoStateHandler = (id:any) => {  
+const  changeTodoStateHandler = (id:string) => {  
   
-  setTodoData(todoData.map((todo:any) =>{ 
+  setTodoData(todoData.map((todo) =>{ 
     if(todo.id === id){
        return { ...todo , isDone : !todo.isDone}
     }
       return todo
     }))
   
-    console.log(todoData);
+
   
 
   
