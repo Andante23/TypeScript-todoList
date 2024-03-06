@@ -1,20 +1,15 @@
 import React, { useState } from "react";
 import TodoHeader from "./components/TodoHeader";
-import TodoItems from "./components/TodoItems";
-
-// 여러가지 타입을 갖는 프로퍼티로 이루어진 새로운 것을 정의
-// 마치  todo리스트 하나의 아이템에도  여러가지 타입을 가집
-export type Todo = {
-  id: string;
-  title: string;
-  text: string;
-  isDone: boolean;
-};
+import { addTodo, deleteTodo, updateTodo } from "./store/modules/todoSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "./store/config/configStore";
 
 const App: React.FC = () => {
   const [title, setTitle] = useState<string>("");
   const [text, setText] = useState<string>("");
-  const [todoData, setTodoData] = useState<Todo[]>([]);
+
+  const selectTodo = useSelector((state: RootState) => state.todos);
+  const dispatch = useDispatch<AppDispatch>();
 
   const onChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) =>
     setTitle(event.target.value);
@@ -24,31 +19,22 @@ const App: React.FC = () => {
   const onSubmitHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    setTodoData([
-      { id: crypto.randomUUID(), title, text, isDone: false },
-      ...todoData,
-    ]);
+    dispatch(addTodo({ text, title }));
 
     setText("");
     setTitle("");
   };
 
-  const deleteTodoHandler = (id: string) =>
-    setTodoData(todoData.filter((todo) => todo.id !== id));
+  console.log(selectTodo);
 
-  const changeTodoStateHandler = (id: string) => {
-    setTodoData(
-      todoData.map((todo) => {
-        if (todo.id === id) {
-          return { ...todo, isDone: !todo.isDone };
-        }
-        return todo;
-      })
-    );
+  const deleteTodoHandler = (id: string) => {
+    dispatch(deleteTodo(id));
   };
 
-  const todoIsTrue = todoData.filter((data) => data.isDone);
-  const todoIsFalse = todoData.filter((data) => !data.isDone);
+  const changeTodoHandler = (id: string) => {
+    dispatch(updateTodo(id));
+  };
+
   return (
     <>
       <TodoHeader />
@@ -59,19 +45,27 @@ const App: React.FC = () => {
         <button type="submit">버튼</button>
       </form>
 
-      <TodoItems
-        headerTitle="working"
-        todo={todoIsTrue}
-        deleteTodoHandler={deleteTodoHandler}
-        changeTodoStateHandler={changeTodoStateHandler}
-      />
+      {selectTodo
+        .filter((data) => data.isDone)
+        .map((data) => (
+          <div key={data.id}>
+            <h1>{data.text}</h1>
+            <p>{data.title}</p>
+            <button onClick={() => deleteTodoHandler(data.id)}>삭제</button>
+            <button onClick={() => changeTodoHandler(data.id)}>시작</button>
+          </div>
+        ))}
 
-      <TodoItems
-        headerTitle="False"
-        todo={todoIsFalse}
-        deleteTodoHandler={deleteTodoHandler}
-        changeTodoStateHandler={changeTodoStateHandler}
-      />
+      {selectTodo
+        .filter((data) => !data.isDone)
+        .map((data) => (
+          <div key={data.id}>
+            <h1>{data.text}</h1>
+            <p>{data.title}</p>
+            <button onClick={() => deleteTodoHandler(data.id)}>삭제</button>
+            <button onClick={() => changeTodoHandler(data.id)}>종료</button>
+          </div>
+        ))}
     </>
   );
 };
