@@ -1,29 +1,24 @@
 import axios from "axios"
-import { NewTodo } from "../pages/HomePage";
+import { NewTodo , Todo } from "../types/NewTodo";
 
-export type Todo ={
-  id:string;
-  title:string;
-  content:string;
-  isDone:boolean;
-}
+
 
 export async function getTodos():Promise<Todo[]>  {
     console.log("getTodos 호출");
-    const response = await axios.get("http://localhost:4000/todos");
+    const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}`);
     return response.data;
   };
 
 export  async function newTodo(newTodo:Todo)  {
-    await axios.post("http://localhost:4000/todos", newTodo);
+    await axios.post(`${process.env.REACT_APP_SERVER_URL}`, newTodo);
   };
 
 export async function deleteTodo(id:string) {
-    await axios.delete(`http://localhost:4000/todos/${id}`)
+    await axios.delete(`${process.env.REACT_APP_SERVER_URL}/${id}`)
   }
 
 
 
   export async function patchTodo({id,isDone}:NewTodo ) {    
-    await axios.patch(`http://localhost:4000/todos/${id}`,{isDone:!isDone} )
+    await axios.patch(`${process.env.REACT_APP_SERVER_URL}/${id}`,{isDone:!isDone} )
   }

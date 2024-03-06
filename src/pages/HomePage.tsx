@@ -1,28 +1,35 @@
-import React, { useState } from "react";
+import React from "react";
 import TodoHeader from "../components/TodoHeader";
 import { QueryClient, useMutation, useQuery } from "react-query";
-import {
-  deleteTodo,
-  getTodos,
-  newTodo,
-  patchTodo,
-  // patchEndTodo,
-  // patchStartTodo,
-} from "../api/todos";
-
-export type NewTodo = {
-  id: string;
-  title: string;
-  content: string;
-  isDone: boolean;
-};
+import { getTodos, newTodo, deleteTodo, patchTodo } from "../api/todos";
+import useForm from "../hooks/useForm";
+import styled from "styled-components";
+import TodoCardList from "../components/TodoCardList";
 
 const HomePage: React.FC = () => {
-  const [title, setTitle] = useState<string>("");
-  const [content, setContent] = useState<string>("");
+  const { content, title, onChangeContent, onChangeTitle, onReset } = useForm();
   const { data, isLoading } = useQuery(["todos"], () => getTodos());
 
   const queryClient = new QueryClient();
+
+  const mutation = useMutation(newTodo, {
+    onSuccess: () => {
+      queryClient.invalidateQueries("todos");
+    },
+  });
+
+  const todoSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    mutation.mutate({
+      id: crypto.randomUUID(),
+      title: title,
+      content: content,
+      isDone: false,
+    });
+
+    onReset();
+  };
 
   const { mutate: mutateDelete } = useMutation({
     mutationFn: deleteTodo,
@@ -38,20 +45,9 @@ const HomePage: React.FC = () => {
     },
   });
 
-  const mutation = useMutation(newTodo, {
-    onSuccess: () => {
-      queryClient.invalidateQueries("todos");
-    },
-  });
-
   if (isLoading) {
     return <h1>Loading...</h1>;
   }
-
-  const onChangeTitle = (event: React.ChangeEvent<HTMLInputElement>) =>
-    setTitle(event.target.value);
-  const onChangeContent = (event: React.ChangeEvent<HTMLTextAreaElement>) =>
-    setContent(event.target.value);
 
   return (
     <>
@@ -61,75 +57,38 @@ const HomePage: React.FC = () => {
         "Adding todo..."
       ) : (
         <>
-          {mutation.isError ? <div>An error occurred:error</div> : null}
+          {mutation.isError ? "todo를 추가하는데 실패 하였습니다." : null}
 
-          <form>
-            <input type="text" onChange={onChangeTitle} value={title} />
-            <textarea onChange={onChangeContent} value={content} />
-            <button
-              onClick={() => {
-                mutation.mutate({
-                  id: crypto.randomUUID(),
-                  title: title,
-                  content: content,
-                  isDone: false,
-                });
-              }}
-            >
-              버튼
-            </button>
-          </form>
+          <StForm onSubmit={todoSubmitForm}>
+            <StFormInput type="text" onChange={onChangeTitle} value={title} />
+            <StFormTextArea onChange={onChangeContent} value={content} />
+            <StFormButton type="submit">할일 추가</StFormButton>
+          </StForm>
+          <TodoCardList />
         </>
       )}
-
-      <h1>시작</h1>
-      {data
-        ?.filter((data) => data.isDone)
-        .map((data) => (
-          <div key={data.id}>
-            <h1>{data.title}</h1>
-            <p>{data.content}</p>
-            <button
-              onClick={() => {
-                mutateDelete(data.id);
-              }}
-            >
-              삭제
-            </button>
-            <button
-              onClick={() => {
-                mutateChange({ id: data.id, isDone: true, title, content });
-              }}
-            >
-              종료
-            </button>
-          </div>
-        ))}
-
-      <h1>종료</h1>
-      {data
-        ?.filter((data) => !data.isDone)
-        .map((data) => (
-          <div key={data.id}>
-            <h1>{data.title}</h1>
-            <p>{data.content}</p>
-            <button
-              onClick={() => {
-                mutateDelete(data.id);
-              }}
-            >
-              삭제
-            </button>
-            <button
-              onClick={() => {
-                mutateChange({ id: data.id, isDone: false, title, content });
-              }}
-            >
-              시작
-            </button>
-          </div>
-        ))}
     </>
   );
 };
 export default HomePage;
+
+const StForm = styled.form`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+`;
+
+const StFormInput = styled.input`
+  width: 25rem;
+`;
+
+const StFormTextArea = styled.textarea`
+  width: 25rem;
+  height: 10vh;
+  margin: 10px;
+`;
+
+const StFormButton = styled.button`
+  margin: 1.25rem;
+  padding: 0.4rem;
+`;
