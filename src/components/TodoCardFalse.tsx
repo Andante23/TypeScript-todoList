@@ -1,27 +1,14 @@
-import { useQuery, useMutation, QueryClient } from "react-query";
-import { getTodos, deleteTodo, patchTodo } from "../api/todos";
+import { useQuery } from "react-query";
+import { getTodos } from "../api/todos";
 import useForm from "../hooks/useForm";
 import styled from "styled-components";
+import useMutate from "../hooks/useMutate";
 
 const TodoCardFalse = () => {
   const { data } = useQuery(["todos"], () => getTodos());
-  console.log(data);
-  const queryClient = new QueryClient();
+
+  const { mutateDelete, mutateChange } = useMutate();
   const { title, content } = useForm();
-
-  const { mutate: mutateDelete } = useMutation({
-    mutationFn: deleteTodo,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries("todos");
-    },
-  });
-
-  const { mutate: mutateChange } = useMutation({
-    mutationFn: patchTodo,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries("todos");
-    },
-  });
 
   return (
     <>
