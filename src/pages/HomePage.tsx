@@ -1,14 +1,14 @@
 import React from "react";
 import TodoHeader from "../components/TodoHeader";
 import { QueryClient, useMutation, useQuery } from "react-query";
-import { getTodos, newTodo, deleteTodo, patchTodo } from "../api/todos";
+import { getTodos, newTodo } from "../api/todos";
 import useForm from "../hooks/useForm";
 import styled from "styled-components";
 import TodoCardList from "../components/TodoCardList";
 
 const HomePage: React.FC = () => {
   const { content, title, onChangeContent, onChangeTitle, onReset } = useForm();
-  const { data, isLoading } = useQuery(["todos"], () => getTodos());
+  const { isLoading } = useQuery(["todos"], () => getTodos());
 
   const queryClient = new QueryClient();
 
@@ -31,20 +31,6 @@ const HomePage: React.FC = () => {
     onReset();
   };
 
-  const { mutate: mutateDelete } = useMutation({
-    mutationFn: deleteTodo,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries("todos");
-    },
-  });
-
-  const { mutate: mutateChange } = useMutation({
-    mutationFn: patchTodo,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries("todos");
-    },
-  });
-
   if (isLoading) {
     return <h1>Loading...</h1>;
   }
@@ -59,11 +45,20 @@ const HomePage: React.FC = () => {
         <>
           {mutation.isError ? "todo를 추가하는데 실패 하였습니다." : null}
 
-          <StForm onSubmit={todoSubmitForm}>
-            <StFormInput type="text" onChange={onChangeTitle} value={title} />
-            <StFormTextArea onChange={onChangeContent} value={content} />
-            <StFormButton type="submit">할일 추가</StFormButton>
-          </StForm>
+          <StTodoForm onSubmit={todoSubmitForm}>
+            <StTodoFormInput
+              type="text"
+              onChange={onChangeTitle}
+              value={title}
+              placeholder="text를 입력해주세요"
+            />
+            <StTodoFormTextArea
+              onChange={onChangeContent}
+              value={content}
+              placeholder="textArea를 입력해주세요"
+            />
+            <StTodoFormButton type="submit">할일 추가</StTodoFormButton>
+          </StTodoForm>
           <TodoCardList />
         </>
       )}
@@ -72,23 +67,32 @@ const HomePage: React.FC = () => {
 };
 export default HomePage;
 
-const StForm = styled.form`
+const StTodoForm = styled.form`
   display: flex;
   align-items: center;
   flex-direction: column;
 `;
 
-const StFormInput = styled.input`
+const StTodoFormInput = styled.input`
   width: 25rem;
 `;
 
-const StFormTextArea = styled.textarea`
+const StTodoFormTextArea = styled.textarea`
   width: 25rem;
   height: 10vh;
   margin: 10px;
 `;
 
-const StFormButton = styled.button`
+const StTodoFormButton = styled.button`
   margin: 1.25rem;
   padding: 0.4rem;
+  background-color: #1677ff;
+  border-color: #1677ff;
+  border-radius: 5px;
+  color: #ffffff;
+  &:hover {
+    background-color: #3b85ee;
+    border-color: #3b85ee;
+    cursor: pointer;
+  }
 `;

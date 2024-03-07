@@ -20,4 +20,6 @@ const StTodoHeader = styled.header`
 const StTodoHeaderTitle = styled.h1`
   font-family: "Courier New", Courier, monospace;
   padding: 2.5rem;
+  font-weight: bolder;
+  font-size: 25px;
 `;

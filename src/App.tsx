@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import DetailPage from "./pages/DetailPage";
+
 import { GlobalStyle } from "./style/GlobalStyle";
 
 const App: React.FC = () => {
@@ -9,7 +9,6 @@ const App: React.FC = () => {
       <GlobalStyle />
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="detail/:id" element={<DetailPage />} />
       </Routes>
     </>
   );
