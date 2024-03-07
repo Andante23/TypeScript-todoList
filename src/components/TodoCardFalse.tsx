@@ -1,14 +1,21 @@
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { getTodos } from "../api/todos";
 import useForm from "../hooks/useForm";
 import styled from "styled-components";
 import useMutate from "../hooks/useMutate";
 
 const TodoCardFalse = () => {
-  const { data } = useQuery(["todos"], () => getTodos());
+  const { data } = useQuery({
+    queryKey: ["todos"],
+    queryFn: () => getTodos(),
+  });
 
   const { mutateDelete, mutateChange } = useMutate();
   const { title, content } = useForm();
+
+  const deleteButtonClick = (id: string) => {
+    mutateDelete(id);
+  };
 
   return (
     <>
@@ -26,7 +33,7 @@ const TodoCardFalse = () => {
               <StTodoCardFalseButtonOption>
                 <StTOdoCardFalseButtonDelete
                   onClick={() => {
-                    mutateDelete(data.id);
+                    deleteButtonClick(data.id);
                   }}
                 >
                   삭제

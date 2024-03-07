@@ -1,11 +1,16 @@
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { getTodos } from "../api/todos";
 import useForm from "../hooks/useForm";
 import styled from "styled-components";
 import useMutate from "../hooks/useMutate";
 
 const TodoCardTrue = () => {
-  const { data } = useQuery(["todos"], () => getTodos());
+  const { data } = useQuery({
+    queryKey: ["todos"],
+    queryFn: () => getTodos(),
+  });
+
+  console.log(data);
 
   const { mutateDelete, mutateChange } = useMutate();
   const { title, content } = useForm();

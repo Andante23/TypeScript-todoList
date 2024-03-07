@@ -1,20 +1,29 @@
 import React from "react";
 import TodoHeader from "../components/TodoHeader";
-import { QueryClient, useMutation, useQuery } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getTodos, newTodo } from "../api/todos";
 import useForm from "../hooks/useForm";
 import styled from "styled-components";
 import TodoCardList from "../components/TodoCardList";
-
 const HomePage: React.FC = () => {
   const { content, title, onChangeContent, onChangeTitle, onReset } = useForm();
-  const { isLoading } = useQuery(["todos"], () => getTodos());
+  const { isLoading } = useQuery({
+    queryKey: ["todos"],
+    initialData: [],
+    queryFn: () => getTodos(),
+  });
 
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
 
-  const mutation = useMutation(newTodo, {
-    onSuccess: () => {
-      queryClient.invalidateQueries("todos");
+  const mutation = useMutation({
+    mutationFn: newTodo,
+    onError: () => {
+      alert("there was an error");
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["todos"],
+      });
     },
   });
 
@@ -39,7 +48,7 @@ const HomePage: React.FC = () => {
     <>
       <TodoHeader />
 
-      {mutation.isLoading ? (
+      {mutation.isPending ? (
         "Adding todo..."
       ) : (
         <>
@@ -59,6 +68,7 @@ const HomePage: React.FC = () => {
             />
             <StTodoFormButton type="submit">할일 추가</StTodoFormButton>
           </StTodoForm>
+
           <TodoCardList />
         </>
       )}

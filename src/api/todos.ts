@@ -6,6 +6,8 @@ import { NewTodo , Todo } from "../types/NewTodo";
 export async function getTodos():Promise<Todo[]>  {
     console.log("getTodos 호출");
     const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}`);
+    console.log(response);
+    
     return response.data;
   };
 
