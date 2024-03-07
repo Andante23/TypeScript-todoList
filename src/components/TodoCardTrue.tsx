@@ -10,10 +10,28 @@ const TodoCardTrue = () => {
     queryFn: () => getTodos(),
   });
 
-  console.log(data);
-
   const { mutateDelete, mutateChange } = useMutate();
   const { title, content } = useForm();
+
+  const deleteTodoButtonClick = (id: string) => {
+    const isDelete: boolean = window.confirm(" 삭제해주시겠습니까? ");
+
+    if (isDelete) {
+      mutateDelete(id);
+    } else {
+      return;
+    }
+  };
+
+  const ChangeTodoStateButtonClick = (id: string, isDone: Boolean = false) => {
+    const isChange: boolean = window.confirm("변경하겠습니까?");
+
+    if (isChange) {
+      mutateChange({ id, isDone: false, title, content });
+    } else {
+      return;
+    }
+  };
 
   return (
     <>
@@ -31,19 +49,14 @@ const TodoCardTrue = () => {
               <StTodoCardTrueButtonOption>
                 <StTOdoCardTrueButtonDelete
                   onClick={() => {
-                    mutateDelete(data.id);
+                    deleteTodoButtonClick(data.id);
                   }}
                 >
                   삭제
                 </StTOdoCardTrueButtonDelete>
                 <StTOdoCardTrueButtonStart
                   onClick={() => {
-                    mutateChange({
-                      id: data.id,
-                      isDone: false,
-                      title,
-                      content,
-                    });
+                    ChangeTodoStateButtonClick(data.id, false);
                   }}
                 >
                   시작

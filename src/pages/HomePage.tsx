@@ -30,12 +30,18 @@ const HomePage: React.FC = () => {
   const todoSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    mutation.mutate({
-      id: crypto.randomUUID(),
-      title: title,
-      content: content,
-      isDone: false,
-    });
+    if (title.trim() !== "" && content.trim() !== "") {
+      mutation.mutate({
+        id: crypto.randomUUID(),
+        title: title,
+        content: content,
+        isDone: false,
+      });
+    }
+
+    if (title.trim() === "" && content.trim() === "") {
+      alert("제목과 내용을 입력해주세요");
+    }
 
     onReset();
   };

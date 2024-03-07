@@ -13,8 +13,24 @@ const TodoCardFalse = () => {
   const { mutateDelete, mutateChange } = useMutate();
   const { title, content } = useForm();
 
-  const deleteButtonClick = (id: string) => {
-    mutateDelete(id);
+  const deleteTodoButtonClick = (id: string) => {
+    const isDelete: boolean = window.confirm(" 삭제해주시겠습니까? ");
+
+    if (isDelete) {
+      mutateDelete(id);
+    } else {
+      return;
+    }
+  };
+
+  const ChangeTodoStateButtonClick = (id: string, isDone: Boolean = false) => {
+    const isChange: boolean = window.confirm("변경하겠습니까?");
+
+    if (isChange) {
+      mutateChange({ id, isDone: false, title, content });
+    } else {
+      return;
+    }
   };
 
   return (
@@ -33,14 +49,14 @@ const TodoCardFalse = () => {
               <StTodoCardFalseButtonOption>
                 <StTOdoCardFalseButtonDelete
                   onClick={() => {
-                    deleteButtonClick(data.id);
+                    deleteTodoButtonClick(data.id);
                   }}
                 >
                   삭제
                 </StTOdoCardFalseButtonDelete>
                 <StTOdoCardFalseButtonEnd
                   onClick={() => {
-                    mutateChange({ id: data.id, isDone: true, title, content });
+                    ChangeTodoStateButtonClick(data.id, true);
                   }}
                 >
                   종료

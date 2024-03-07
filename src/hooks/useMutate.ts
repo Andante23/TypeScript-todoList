@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 function useMutate(){
                           
     const queryClient = useQueryClient();
-    const navigate = useNavigate();
+
     const { mutate: mutateDelete } = useMutation({
         mutationFn: deleteTodo,
         onSuccess: async () => {
