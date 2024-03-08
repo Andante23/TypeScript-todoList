@@ -4,14 +4,11 @@ import { NewTodo , Todo } from "../types/NewTodo";
 
 
 export async function getTodos():Promise<Todo[]>  {
-    console.log("getTodos 호출");
     const response = await axios.get(`${process.env.REACT_APP_SERVER_URL}`);
-    console.log(response);
-    
     return response.data;
   };
 
-export  async function newTodo(newTodo:Todo)  {
+export  async function addTodo(newTodo:Todo)  {
     await axios.post(`${process.env.REACT_APP_SERVER_URL}`, newTodo);
   };
 

@@ -1,5 +1,4 @@
-import { Routes, Route } from "react-router-dom";
-import HomePage from "./pages/HomePage";
+import TodoMainPage from "./components/TodoMainPage";
 
 import { GlobalStyle } from "./style/GlobalStyle";
 
@@ -7,9 +6,7 @@ const App: React.FC = () => {
   return (
     <>
       <GlobalStyle />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-      </Routes>
+      <TodoMainPage />
     </>
   );
 };

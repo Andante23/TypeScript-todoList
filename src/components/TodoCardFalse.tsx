@@ -6,28 +6,28 @@ import useMutate from "../hooks/useMutate";
 
 const TodoCardFalse = () => {
   const { data } = useQuery({
-    queryKey: ["todos"],
+    queryKey: [`${process.env.REACT_APP_QUERY_KEY}`],
     queryFn: () => getTodos(),
   });
 
-  const { mutateDelete, mutateChange } = useMutate();
+  const { mutateDeleteTodo, mutateChangeTodo } = useMutate();
   const { title, content } = useForm();
 
   const deleteTodoButtonClick = (id: string) => {
     const isDelete: boolean = window.confirm(" 삭제해주시겠습니까? ");
 
     if (isDelete) {
-      mutateDelete(id);
+      mutateDeleteTodo(id);
     } else {
       return;
     }
   };
 
-  const ChangeTodoStateButtonClick = (id: string, isDone: Boolean = false) => {
+  const changeTodoStateButtonClick = (id: string, isDone?: Boolean) => {
     const isChange: boolean = window.confirm("변경하겠습니까?");
 
     if (isChange) {
-      mutateChange({ id, isDone: false, title, content });
+      mutateChangeTodo({ id, isDone: true, title, content });
     } else {
       return;
     }
@@ -56,7 +56,7 @@ const TodoCardFalse = () => {
                 </StTOdoCardFalseButtonDelete>
                 <StTOdoCardFalseButtonEnd
                   onClick={() => {
-                    ChangeTodoStateButtonClick(data.id, true);
+                    changeTodoStateButtonClick(data.id);
                   }}
                 >
                   종료

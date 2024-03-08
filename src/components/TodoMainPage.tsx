@@ -1,31 +1,20 @@
-import React from "react";
-import TodoHeader from "../components/TodoHeader";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getTodos, newTodo } from "../api/todos";
+import TodoHeader from "./TodoHeader";
+import { useQuery } from "@tanstack/react-query";
+import { getTodos } from "../api/todos";
 import useForm from "../hooks/useForm";
 import styled from "styled-components";
-import TodoCardList from "../components/TodoCardList";
-const HomePage: React.FC = () => {
+import TodoCardList from "./TodoCardList";
+import useMutate from "../hooks/useMutate";
+
+const TodoMainPage: React.FC = () => {
   const { content, title, onChangeContent, onChangeTitle, onReset } = useForm();
   const { isLoading } = useQuery({
-    queryKey: ["todos"],
-    initialData: [],
+    queryKey: [`${process.env.REACT_APP_QUERY_KEY}`],
+
     queryFn: () => getTodos(),
   });
 
-  const queryClient = useQueryClient();
-
-  const mutation = useMutation({
-    mutationFn: newTodo,
-    onError: () => {
-      alert("there was an error");
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: ["todos"],
-      });
-    },
-  });
+  const { mutation } = useMutate();
 
   const todoSubmitForm = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -81,7 +70,7 @@ const HomePage: React.FC = () => {
     </>
   );
 };
-export default HomePage;
+export default TodoMainPage;
 
 const StTodoForm = styled.form`
   display: flex;
@@ -90,13 +79,16 @@ const StTodoForm = styled.form`
 `;
 
 const StTodoFormInput = styled.input`
-  width: 25rem;
+  width: 30rem;
+  height: 4em;
+  border-radius: 5px;
 `;
 
 const StTodoFormTextArea = styled.textarea`
-  width: 25rem;
+  width: 30rem;
   height: 10vh;
   margin: 10px;
+  border-radius: 5px;
 `;
 
 const StTodoFormButton = styled.button`
